@@ -1,11 +1,12 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 
 public class Missile {
 	private int x, y;
 	private static final int MISSLE_SIZE = 16;
 	private static final int MISSLE_RADIUS = MISSLE_SIZE >> 1;
-	private boolean isAlive = true;
+	private boolean alive = true;
 	private Direction dir = null;
 	private static final int STEP_SIZE = 15;
 	
@@ -27,10 +28,14 @@ public class Missile {
 	public boolean isAlive() {
 		if(x > TankClient.FRAME_WIDTH || x < 0 || 
 				y > TankClient.FRAME_HEIGHT || y < 0) 
-			isAlive = false;
-		return isAlive;	
+			alive = false;
+		return alive;	
 	}
 	
+	public void setAlive(boolean alive) {
+		this.alive = alive;
+	}
+
 	public void move(){
 		switch(dir){
 		case U:
@@ -63,8 +68,16 @@ public class Missile {
 			break;
 		}
 	}
-
-
 	
+	public Rectangle getRect(){
+		return new Rectangle(x,y,MISSLE_SIZE,MISSLE_SIZE);
+	}
+	
+	public boolean hitTank(Tank tank)
+	{
+		if(this.getRect().intersects(tank.getRect()))
+			return true;
+		return false;
+	}
 	
 }

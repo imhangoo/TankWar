@@ -6,12 +6,16 @@ public class TankClient extends Frame {
 	public static final int FRAME_HEIGHT = 600;
 	private static final Image BACKGROUND = Toolkit.getDefaultToolkit().createImage("images/black.jpg");
 
-	Tank myTank = new Tank(300, 300);
+	private Tank myTank = new Tank(300, 300, true, this);
+	private Tank enemyTank = new Tank(400,400,false, this);
 	
+	
+
 	Image offScreenImage = null;
 	@Override
 	public void paint(Graphics g) {
 		myTank.paint(g);
+		enemyTank.paint(g);
 	}
 
 	@Override
@@ -48,6 +52,12 @@ public class TankClient extends Frame {
 		// launch repaint thread
 		new Thread(new RepaintThread()).start();
 	}
+	
+	public Tank getEnemyTank() {
+		return enemyTank;
+	}
+
+	
 
 	public static void main(String[] args) {
 		// create a new instance of TankClient, and call its launch function

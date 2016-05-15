@@ -1,5 +1,6 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,24 +16,39 @@ public class Tank {
     private Direction dir = Direction.R;
     private static final int STEP_SIZE = 10;
     private List<Missile> missiles = new ArrayList<Missile>();
+    private boolean good;
+    private boolean alive = true;
+    private TankClient tc;
     
     // constructor
-	public Tank(int x, int y) {
+	public Tank(int x, int y, boolean good, TankClient tc) {
 		this.x = x;
 		this.y = y;
+		this.good = good;
+		this.tc = tc;
 	}
 	
 	
 	// paint tank on frame
 	public void paint(Graphics g){
+		if(!alive) return;
 		Color c = g.getColor();
 		// paint tank
-		g.setColor(Color.red);
+		if(good)
+			g.setColor(Color.RED);
+		else
+			g.setColor(Color.GREEN);
 		g.fillOval(x, y, TANK_SIZE, TANK_SIZE);
 		// paint missle
 		Iterator<Missile> it = missiles.iterator();
 		while(it.hasNext()){
 			Missile missile = it.next();
+			Tank enemy = tc.getEnemyTank();
+			if(enemy.isAlive()&&missile.hitTank(enemy)){
+				missile.setAlive(false);
+				enemy.setAlive(false);
+			}
+				
 			if(missile.isAlive())
 				missile.paint(g);
 			else{
@@ -45,6 +61,16 @@ public class Tank {
 		g.setColor(c);
 	}
 	
+	public boolean isAlive() {
+		return alive;
+	}
+
+
+	public void setAlive(boolean live) {
+		this.alive = live;
+	}
+
+
 	public void drawGun(Graphics g){
 		Color c = g.getColor();
 		g.setColor(Color.black);
@@ -62,7 +88,7 @@ public class Tank {
 			g.drawLine(x + TANK_RADIUS, y + TANK_RADIUS,x + TANK_SIZE , y + TANK_SIZE);
 			break;
 		case D:
-			g.drawLine(x + TANK_RADIUS, y + TANK_RADIUS,x + TANK_SIZE , y + TANK_SIZE);
+			g.drawLine(x + TANK_RADIUS, y + TANK_RADIUS,x + TANK_RADIUS , y + TANK_SIZE);
 			break;
 		case LD:
 			g.drawLine(x + TANK_RADIUS, y + TANK_RADIUS,x , y + TANK_SIZE);
@@ -214,5 +240,8 @@ public class Tank {
 		}
 	}
 	
+	public Rectangle getRect(){
+		return new Rectangle(x,y,TANK_SIZE,TANK_SIZE);
+	}
 
 }
