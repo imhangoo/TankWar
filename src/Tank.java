@@ -19,7 +19,7 @@ public class Tank {
     private boolean good;
     private boolean alive = true;
     private TankClient tc;
-    
+    private List<Explode> eps = new ArrayList<Explode>();
     // constructor
 	public Tank(int x, int y, boolean good, TankClient tc) {
 		this.x = x;
@@ -39,12 +39,14 @@ public class Tank {
 		else
 			g.setColor(Color.GREEN);
 		g.fillOval(x, y, TANK_SIZE, TANK_SIZE);
-		// paint missle
-		Iterator<Missile> it = missiles.iterator();
-		while(it.hasNext()){
-			Missile missile = it.next();
+		
+		// paint all missiles
+		Iterator<Missile> itMissile = missiles.iterator();
+		while(itMissile.hasNext()){
+			Missile missile = itMissile.next();
 			Tank enemy = tc.getEnemyTank();
 			if(enemy.isAlive()&&missile.hitTank(enemy)){
+				eps.add(new Explode(missile.getX(),missile.getY()));
 				missile.setAlive(false);
 				enemy.setAlive(false);
 			}
@@ -52,11 +54,24 @@ public class Tank {
 			if(missile.isAlive())
 				missile.paint(g);
 			else{
-				it.remove();
+				itMissile.remove();
 				missile = null;
-				System.gc();
 			}
 		}
+		
+		// paint all explosions
+		Iterator<Explode> itExplode = eps.iterator();
+		while(itExplode.hasNext()){
+			Explode e = itExplode.next();
+			if(e.isAlive())
+				e.draw(g);
+			else{
+				itExplode.remove();
+				e = null;
+			}
+		}
+		
+		
 		drawGun(g);
 		g.setColor(c);
 	}
